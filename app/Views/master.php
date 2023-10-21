@@ -11,8 +11,6 @@
     <title>Hello, world!</title>
   </head>
   <body>
-    <h1>Hello, world!</h1>
-
     <!-- CONTENT BEGINS -->
     <?= $this->renderSection('content') ?>
     <!-- CONTENT ENDS -->
@@ -20,6 +18,6 @@
     <!-- Option 1: Bootstrap Bundle with Popper -->
     <script src="<?=base_url()?>/bootstrap/js/bootstrap.bundle.min.js" ></script>
 
-   
+    <?= $this->renderSection('pageScripts') ?>
   </body>
 </html>

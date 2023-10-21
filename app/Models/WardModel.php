@@ -4,16 +4,16 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class DistrictModel extends Model
+class WardModel extends Model
 {
     protected $DBGroup          = 'default';
-    protected $table            = 'tmt_districts';
+    protected $table            = 'tmt_wards';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
-    protected $returnType       = 'object';
+    protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['province_id', 'code', 'name', 'name_en', 'full_name', 'full_name_en', 'unit_name', 'unit_name_en'];
+    protected $allowedFields    = ['district_id', 'code', 'name', 'name_en', 'full_name', 'full_name_en', 'unit_name', 'unit_name_en'];
 
     // Dates
     protected $useTimestamps = false;
@@ -41,18 +41,19 @@ class DistrictModel extends Model
 
     public function getData($code)
     {
-        $districtBuilder = $this->db->table('districts');
+        $wardBuilder = $this->db->table('wards');
 
-        $data = $districtBuilder->select([ 'districts.code', 'districts.name', 'districts.name_en', 'districts.full_name', 'districts.full_name_en', 
-        'districts.province_code', 'administrative_units.short_name', 'administrative_units.short_name_en' ])
-        ->join('administrative_units', 'administrative_units.id = districts.administrative_unit_id')
-        ->where('districts.province_code', $code)
+        $data = $wardBuilder->select([ 'wards.code', 'wards.name', 'wards.name_en', 'wards.full_name', 'wards.full_name_en', 
+        'wards.district_code ', 'districts.full_name as district_name', 'administrative_units.short_name', 'administrative_units.short_name_en' ])
+        ->join('administrative_units', 'administrative_units.id = wards.administrative_unit_id')
+        ->join('districts', 'districts.code = wards.district_code')
+        ->where('wards.district_code', $code)
         ->get()->getResultArray();
 
         return $data ?? [];
     }
 
-    public function convertData(array $data, $province_id)
+    public function convertData(array $data, $district_id)
     {
         $builder = $this->db->table($this->table);
         foreach($data as $item) {
@@ -60,7 +61,7 @@ class DistrictModel extends Model
 
             if ( !isset($check->id) ) {
                 $newItem = [
-                    'province_id' => $province_id, 
+                    'district_id' => $district_id, 
                     'code' => $item['code'], 
                     'name' => $item['name'], 
                     'name_en' => $item['name_en'], 

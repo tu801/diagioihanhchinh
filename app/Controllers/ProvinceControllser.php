@@ -22,7 +22,8 @@ class ProvinceControllser extends BaseController
         }
         
 
-        return view('province', [
+        return view('data_content', [
+            'title' => 'Province Data Table',
             'data' => $_provinceModel->findAll()
         ]);
     }
