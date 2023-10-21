@@ -16,6 +16,9 @@ $errors = session()->getFlashdata();
     <?php endif; ?>
     <div class="row">
         <div class="col-12">
+            <a href="<?=base_url('export-provice')?>" class="btn btn-primary">Export Province JSON</a>
+            <a href="<?=base_url('export-districts')?>" class="btn btn-primary">Export Districts JSON</a>
+            <a href="<?=base_url('export-wards')?>" class="btn btn-primary">Export Wards JSON</a>
             <div class="card card-promary">
                 <div class="card-title">
                     <h2><?=$title ?? 'Data Content'?></h2>
