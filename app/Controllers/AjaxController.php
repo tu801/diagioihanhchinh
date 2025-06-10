@@ -1,0 +1,98 @@
+<?php
+
+/**
+ * @author tmtuan
+ * @github https://github.com/tu801
+ * created Date: 11/11/2023
+ */
+
+namespace App\Controllers;
+
+use App\Models\DistrictModel;
+use App\Models\ProvinceModel;
+use App\Models\WardModel;
+
+class AjaxController extends BaseController
+{
+    public function getProvinces()
+    {
+        $response = array();
+        $provinceData = model(ProvinceModel::class)->findAll();
+
+        if (!empty($provinceData) && count($provinceData) > 0) {
+            $data = [];
+            foreach ($provinceData as $item) {
+                $data[] = (object)[
+                    'id' => $item->id,
+                    'name' => $item->full_name
+                ];
+            }
+            $response['error'] = 0;
+            $response['province'] = $data;
+        } else {
+            $response['error'] = 1;
+            $response['message'] = lang('Acp.item_not_found');
+        }
+        return $this->response->setJSON($response);
+    }
+
+    public function getDistricts($province)
+    {
+        $response = array();
+        if (!isset($province) || $province < 0) {
+            $response['error'] = 1;
+            $response['text'] = lang('Acp.invalid_request');
+        } else {
+            $locale = session()->lang->locale ?? '';
+            $districtData = model(DistrictModel::class)
+                ->where('province_id', $province)
+                ->findAll();
+
+            if (isset($districtData) && count($districtData) > 0) {
+                $data = [];
+                foreach ($districtData as $item) {
+                    $itemArr['id'] = $item->id;
+                    $itemArr['name'] = (!empty($locale) && $locale == 'vi') ? $item->full_name : $item->full_name_en;
+                    $data[] = (object)$itemArr;
+                }
+                $response['error'] = 0;
+                $response['district'] = $data;
+            } else {
+                $response['error'] = 1;
+                $response['message'] = lang('Acp.item_not_found');
+            }
+        }
+
+        return $this->response->setJSON($response);
+    }
+
+    public function getWards($district)
+    {
+        $response = array();
+        if (!isset($district) || $district < 0) {
+            $response['error'] = 1;
+            $response['text'] = lang('Acp.invalid_request');
+        } else {
+            $locale = session()->lang->locale ?? '';
+            $districtData = model(WardModel::class)
+                ->where('district_id', $district)
+                ->findAll();
+
+            if (isset($districtData) && count($districtData) > 0) {
+                $data = [];
+                foreach ($districtData as $item) {
+                    $itemArr['id'] = $item['id'];
+                    $itemArr['name'] = (!empty($locale) && $locale == 'vi') ? $item['full_name'] : $item['full_name_en'];
+                    $data[] = (object)$itemArr;
+                }
+                $response['error'] = 0;
+                $response['ward'] = $data;
+            } else {
+                $response['error'] = 1;
+                $response['message'] = lang('Acp.item_not_found');
+            }
+        }
+
+        return $this->response->setJSON($response);
+    }
+}
