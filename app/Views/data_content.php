@@ -18,7 +18,7 @@ $errors = session()->getFlashdata();
         <div class="col-12">
             <div class="card card-promary">
                 <div class="card-title">
-                    <h2>province data</h2>
+                    <h2><?=$title ?? 'Data Content'?></h2>
                 </div>
                 <div class="card-body">
                     <table class="table table-stripped">
@@ -31,6 +31,12 @@ $errors = session()->getFlashdata();
                             <th>Full Name En</th>
                             <th>Unit Name En</th>
                             <th>Unit Name En</th>
+                            <?php if ( isset($isDistrict) && $isDistrict ) : ?>
+                            <th>Province Name</th>
+                            <?php endif; ?>
+                            <?php if ( isset($isWard) && $isWard ) : ?>
+                            <th>District Name</th>
+                            <?php endif; ?>
                         </tr>
 
                         <?php foreach ($data as $item): ?>
@@ -43,6 +49,12 @@ $errors = session()->getFlashdata();
                             <td><?=$item->full_name_en?></td>
                             <td><?=$item->unit_name?></td>
                             <td><?=$item->unit_name_en?></td>
+                            <?php if ( isset($isDistrict) && $isDistrict ) : ?>
+                            <td><?=$item->province_name?></td>
+                            <?php endif; ?>
+                            <?php if ( isset($isWard) && $isWard ) : ?>
+                            <td><?=$item->district_name?></td>
+                            <?php endif; ?>
                         </tr>
                         <?php endforeach; ?>
                     </table>

@@ -1,67 +1,37 @@
-# CodeIgniter 4 Application Starter
+# Vietnameese Area Management
 
-## What is CodeIgniter?
+Quản lý danh sách các tỉnh thành tại Việt Nam, database sẽ update theo repo này:
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+> https://github.com/ThangLeQuoc/vietnamese-provinces-database
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+## Cấu trúc:
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+Database bao gồm 2 phần dữ liệu:
 
-The user guide corresponding to the latest version of the framework can be found
-[here](https://codeigniter4.github.io/userguide/).
+1. Các table dữ liệu chính theo repo trên
 
-## Installation & updates
-
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
-
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+2. Các table có prefix là `tmt_` là các table chứa dữ liệu province | district | ward đã được convert ra để dùng cho các dự án khác
 
 ## Setup
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+- Copy `env` to `.env` và sửa thông tin dự án, database cho đúng
 
-## Important Change with index.php
+- Chạy migration để tạo các table chứa data sau khi convert
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+- import file [mysql](E:\laragon\www\diagioihanhchinh\app\Database\mysql\CreateTables_vn_units.sql) để import các table chứa dữ liệu chưa convert
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+- Chạy các lệnh sau để convert data:
 
-**Please** read the user guide for a better explanation of how CI4 works!
+```shell
+php spark convert:province
+php spark convert:district
+php spark convert:ward
+```
 
-## Repository Management
+- Khi có data mới update thì copy file mysql data vào folder `app\Database\mysql` và đánh dấu version cho phù hợp đồng thời sửa biến `$dataFile` trong file `app\Database\Seeds\ImportNewData.php`. Sau đó chạy lệnh seed để seed data mới đồng thời xoá các data cũ
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+```shell
+php spark db:seed ImportNewData
+```
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
-
-## Server Requirements
-
-PHP version 7.4 or higher is required, with the following extensions installed:
-
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
-
-> **Warning**
-> The end of life date for PHP 7.4 was November 28, 2022. If you are
-> still using PHP 7.4, you should upgrade immediately. The end of life date
-> for PHP 8.0 will be November 26, 2023.
-
-Additionally, make sure that the following extensions are enabled in your PHP:
-
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+- Sau khi setup xong truy cập vào trang chủ và nhấn các nut export để xuất ra file json dùng cho các dự án khác

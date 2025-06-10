@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class DistrictModel extends Model
 {
     protected $DBGroup          = 'default';
-    protected $table            = 'districts';
+    protected $table            = 'tmt_districts';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'object';
@@ -39,15 +39,38 @@ class DistrictModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public function getData()
+    public function getData($code)
     {
-        $builder = $this->db->table('provinces');
+        $districtBuilder = $this->db->table('districts');
 
-        $data = $builder->select([ 'provinces.code', 'provinces.name', 'provinces.name_en', 'provinces.full_name', 'provinces.full_name_en', 
-        'administrative_units.short_name', 'administrative_units.short_name_en' ])
-        ->join('administrative_units', 'administrative_units.id = provinces.administrative_unit_id')
+        $data = $districtBuilder->select([ 'districts.code', 'districts.name', 'districts.name_en', 'districts.full_name', 'districts.full_name_en', 
+        'districts.province_code', 'administrative_units.short_name', 'administrative_units.short_name_en' ])
+        ->join('administrative_units', 'administrative_units.id = districts.administrative_unit_id')
+        ->where('districts.province_code', $code)
         ->get()->getResultArray();
 
         return $data ?? [];
+    }
+
+    public function convertData(array $data, $province_id)
+    {
+        $builder = $this->db->table($this->table);
+        foreach($data as $item) {
+            $check = $builder->where('code', $item['code'])->get()->getFirstRow();
+
+            if ( !isset($check->id) ) {
+                $newItem = [
+                    'province_id' => $province_id, 
+                    'code' => $item['code'], 
+                    'name' => $item['name'], 
+                    'name_en' => $item['name_en'], 
+                    'full_name' => $item['full_name'], 
+                    'full_name_en' => $item['full_name_en'], 
+                    'unit_name' => $item['short_name'], 
+                    'unit_name_en' => $item['short_name_en']
+                ];
+                $builder->insert($newItem);
+            }
+        }        
     }
 }
